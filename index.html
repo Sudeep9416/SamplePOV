@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Identity Verification Analysis - Proof of Concept</title>
+ 
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@300;400;600;700&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+ 
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+ 
+  <style>
+    :root {
+      /* Brand Colors */
+      --color-primary: #FF6900;
+      --color-secondary: #113A5F;
+      --color-accent: #7FB2D6;
+      --color-green: #899E45;
+      --color-gold: #E1A825;
+      --color-purple: #856F98;
+      --color-black: #000000;
+      --color-white: #FFFFFF;
+      --color-gray-dark: #6A7277;
+      --color-gray-medium: #9FA9AF;
+      --color-gray-light: #E5EAEB;
+      --color-gray-lightest: #F7F7F7;
+     
+      /* Typography */
+      --font-primary: 'Albert Sans', sans-serif;
+      --font-accent: 'DM Serif Display', serif;
+    }
+   
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+   
+    body {
+      font-family: var(--font-primary);
+      background: var(--color-gray-lightest);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+   
+    .presentation-container {
+      width: 100%;
+      max-width: 1920px;
+      margin: 0 auto;
+    }
+   
+    .slide {
+      width: 100%;
+      min-height: 100vh;
+      padding: 60px 80px;
+      background: var(--color-white);
+      margin-bottom: 2px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+   
+    /* Navigation */
+    .slide-nav {
+      position: fixed;
+      right: 40px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 1000;
+      background: white;
+      padding: 20px 12px;
+      border-radius: 24px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+   
+    .slide-nav .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color-gray-light);
+      margin: 12px 0;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+   
+    .slide-nav .dot.active {
+      background: var(--color-primary);
+      transform: scale(1.3);
+    }
+   
+    .slide-nav .dot:hover {
+      background: var(--color-secondary);
+    }
+   
+    /* Logo */
+    .slide-logo {
+      position: absolute;
+      top: 40px;
+      right: 80px;
+      height: 40px;
+    }
+   
+    /* Typography */
+    .eyebrow {
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--color-primary);
+      margin-bottom: 16px;
+    }
+   
+    .slide-title {
+      font-weight: 700;
+      font-size: 48px;
+      line-height: 1.2;
+      color: var(--color-secondary);
+      margin-bottom: 32px;
+    }
+   
+    .slide-title.large {
+      font-family: var(--font-accent);
+      font-size: 72px;
+      line-height: 1.1;
+    }
+   
+    .section-header {
+      font-weight: 600;
+      font-size: 28px;
+      color: var(--color-secondary);
+      margin-bottom: 16px;
+    }
+   
+    .body-text {
+      font-weight: 400;
+      font-size: 20px;
+      line-height: 1.6;
+      color: var(--color-black);
+      margin-bottom: 16px;
+    }
+   
+    .subtitle {
+      font-weight: 400;
+      font-size: 24px;
+      color: var(--color-gray-dark);
+      margin-bottom: 24px;
+    }
+   
+    /* Layout */
+    .two-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-top: 32px;
+    }
+   
+    .three-column {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 40px;
+      margin-top: 32px;
+    }
+   
+    .content-center {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+   
+    /* Components */
+    .callout-primary {
+      background-color: #FFF9F5;
+      border-left: 4px solid var(--color-primary);
+      padding: 24px;
+      margin: 20px 0;
+    }
+   
+    .callout-primary .title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+    }
+   
+    .callout-primary .text {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--color-black);
+    }
+   
+    .callout-info {
+      background-color: #F0F5F9;
+      border-left: 4px solid var(--color-secondary);
+      padding: 24px;
+      margin: 20px 0;
+    }
+   
+    .callout-info .title {
+      font-weight: 700;
+      font-size: 18px;
+      color: var(--color-secondary);
+      margin-bottom: 12px;
+    }
+   
+    .callout-info .text {
+      font-size: 16px;
+      line-height: 1.5;
+      color: var(--color-black);
+    }
+   
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+   
+    .stat-card .number {
+      font-family: var(--font-accent);
+      font-size: 56px;
+      color: var(--color-primary);
+      margin-bottom: 8px;
+      line-height: 1;
+    }
+   
+    .stat-card .label {
+      font-size: 16px;
+      color: var(--color-gray-dark);
+      line-height: 1.4;
+    }
+   
+    .stat-card .change {
+      font-weight: 600;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+   
+    .stat-card .change.positive {
+      color: var(--color-green);
+    }
+   
+    .stat-card .change.negative {
+      color: #A15A32;
+    }
+   
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin: 32px 0;
+    }
+   
+    /* Chart Container */
+    .chart-container {
+      position: relative;
+      height: 450px;
+      margin: 32px 0;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+    }
+   
+    .chart-small {
+      height: 350px;
+    }
+   
+    /* Lists */
+    .feature-list {
+      list-style: none;
+      padding: 0;
+    }
+   
+    .feature-list li {
+      padding: 12px 0 12px 32px;
+      position: relative;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+   
+    .feature-list li::before {
+      content: "→";
+      position: absolute;
+      left: 0;
+      color: var(--color-primary);
+      font-weight: 700;
+    }
+   
+    .numbered-list {
+      padding-left: 24px;
+    }
+   
+    .numbered-list li {
+      padding: 8px 0;
+      font-size: 18px;
+      line-height: 1.5;
+    }
+   
+    /* Gap Grid */
+    .gap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 32px;
+    }
+   
+    .gap-item {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      border-left: 6px solid var(--color-gray-light);
+    }
+   
+    .gap-item.critical {
+      border-left-color: var(--color-primary);
+    }
+   
+    .gap-item.high {
+      border-left-color: var(--color-gold);
+    }
+   
+    .gap-item.medium {
+      border-left-color: var(--color-accent);
+    }
+   
+    .gap-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+   
+    .gap-header .icon {
+      font-size: 32px;
+      margin-right: 12px;
+    }
+   
+    .gap-header h4 {
+      font-weight: 600;
+      font-size: 20px;
+      color: var(--color-secondary);
+      margin: 0;
+    }
+   
+    .gap-content p {
+      font-size: 16px;
+      line-height: 1.5;
+      margin: 8px 0;
+    }
+   
+    .gap-content .metric {
+      font-weight: 600;
+      color: var(--color-primary);
+    }
+   
+    .gap-content .impact {
+      color: var(--color-gray-dark);
+    }
+   
+    .gap-content .solution {
+      margin-top: 12px;
+      color: var(--color-secondary);
+    }
+   
+    /* Agenda */
+    .agenda-list {
+      list-style: none;
+      padding: 0;
+      max-width: 800px;
+      margin: 32px auto;
+    }
+   
+    .agenda-list li {
+      padding: 20px 24px;
+      margin: 12px 0;
+      background: var(--color-gray-lightest);
+      border-radius: 8px;
+      border-left: 4px solid var(--color-primary);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--color-secondary);
+      display: flex;
+      align-items: center;
+    }
+   
+    .agenda-list li .number {
+      font-family: var(--font-accent);
+      font-size: 32px;
+      color: var(--color-primary);
+      margin-right: 20px;
+      min-width: 40px;
+    }
+   
+    /* Footer */
+    .slide-footer {
+      position: absolute;
+      bottom: 40px;
+      left: 80px;
+      right: 80px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--color-gray-dark);
+      border-top: 1px solid var(--color-gray-light);
+      padding-top: 20px;
+    }
+   
+    .slide-number {
+      font-weight: 600;
+    }
+   
+    .confidential {
+      font-weight: 400;
+    }
+   
+    /* Buttons */
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: white;
+      font-family: var(--font-primary);
+      font-weight: 600;
+      font-size: 18px;
+      padding: 16px 40px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 24px;
+    }
+   
+    .btn-primary:hover {
+      background-color: #E65F00;
+    }
+   
+    /* Metric Highlight */
+    .metric-highlight {
+      text-align: center;
+      padding: 40px;
+      background: var(--color-gray-lightest);
+      border-radius: 8px;
+      margin: 32px 0;
+    }
+   
+    .metric-highlight .stat-number {
+      font-family: var(--font-accent);
+      font-size: 80px;
+      color: var(--color-primary);
+      margin-bottom: 12px;
+      line-height: 1;
+    }
+   
+    .metric-highlight .stat-label {
+      font-size: 20px;
+      color: var(--color-gray-dark);
+      margin-bottom: 8px;
+    }
+   
+    /* ROI Calculator */
+    .roi-calculator {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      margin: 32px 0;
+    }
+   
+    .roi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 32px;
+    }
+   
+    .roi-item {
+      text-align: center;
+      padding: 24px;
+      border-radius: 8px;
+      background: var(--color-gray-lightest);
+    }
+   
+    .roi-item.positive {
+      background: #F0F9F5;
+      border: 2px solid var(--color-green);
+    }
+   
+    .roi-item.highlight {
+      background: #FFF9F5;
+      border: 2px solid var(--color-primary);
+    }
+   
+    .roi-item .roi-label {
+      font-weight: 400;
+      font-size: 14px;
+      color: var(--color-gray-dark);
+      margin-bottom: 8px;
+    }
+   
+    .roi-item .roi-value {
+      font-family: var(--font-accent);
+      font-size: 36px;
+      color: var(--color-secondary);
+      margin-bottom: 4px;
+    }
+   
+    .roi-item.highlight .roi-value {
+      color: var(--color-primary);
+    }
+   
+    .roi-item .roi-description {
+      font-size: 12px;
+      color: var(--color-gray-dark);
+    }
+   
+    .caption {
+      font-weight: 300;
+      font-size: 14px;
+      color: var(--color-gray-dark);
+      font-style: italic;
+      margin-top: 16px;
+    }
+   
+    .insight-box {
+      background: #FFF9F5;
+      border-radius: 8px;
+      padding: 24px;
+      margin: 24px 0;
+    }
+   
+    .insight-box h4 {
+      color: var(--color-primary);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+   
+    .insight-box p {
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--color-black);
+    }
+   
+    /* Print Styles */
+    @media print {
+      .slide {
+        page-break-after: always;
+        height: 100vh;
+      }
+     
+      .slide-nav {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="presentation-container">
+   
+    <!-- Slide 1: Title -->
+    <div class="slide content-center">
+      <svg class="slide-logo" viewBox="0 0 168.12 75.54" xmlns="http://www.w3.org/2000/svg">
+        <polygon fill="#ff6900" points="30.91 10.32 12.57 28.62 30.91 46.92 49.25 28.62 30.91 10.32"/>
+        <polygon fill="#ff8200" points="12.57 46.92 30.91 65.22 49.25 46.92 30.91 28.62 12.57 46.92"/>
+        <path fill="#1c1c4c" d="M58.17,44.11l2.44-2.92c1.69,1.39,3.46,2.27,5.6,2.27,1.69,0,2.71-.67,2.71-1.77v-.05c0-1.04-.64-1.58-3.78-2.38-3.78-.96-6.22-2.01-6.22-5.72v-.05c0-3.4,2.73-5.65,6.57-5.65,2.74,0,5.07,.86,6.97,2.38l-2.15,3.1c-1.66-1.15-3.3-1.85-4.88-1.85s-2.41,.72-2.41,1.63v.05c0,1.23,.8,1.63,4.05,2.46,3.81,.99,5.95,2.36,5.95,5.62v.05c0,3.72-2.84,5.81-6.89,5.81-2.84,0-5.71-.99-7.96-3"/>
+        <path fill="#1c1c4c" d="M86.41,39.75v-.05c0-2.11-1.53-3.96-3.78-3.96s-3.73,1.79-3.73,3.91v.05c0,2.11,1.53,3.96,3.78,3.96s3.73-1.79,3.73-3.91m-11.53,0v-.05c0-4.12,3.33-7.46,7.8-7.46s7.75,3.29,7.75,7.41v.05c0,4.12-3.33,7.46-7.8,7.46s-7.75-3.29-7.75-7.41"/>
+        <path fill="#1c1c4c" d="M92.17,39.75v-.05c0-4.09,3.14-7.46,7.54-7.46,2.71,0,4.4,.91,5.74,2.41l-2.49,2.68c-.91-.96-1.82-1.58-3.27-1.58-2.04,0-3.49,1.79-3.49,3.91v.05c0,2.19,1.42,3.96,3.65,3.96,1.37,0,2.31-.59,3.3-1.53l2.39,2.41c-1.39,1.52-3,2.62-5.87,2.62-4.32,0-7.48-3.32-7.48-7.41"/>
+        <path fill="#1c1c4c" d="M107.56,41.79v-9.28h4.08v8c0,1.93,.91,2.92,2.47,2.92s2.55-.99,2.55-2.92v-8h4.08v14.34h-4.08v-2.03c-.94,1.2-2.15,2.3-4.21,2.3-3.08,0-4.88-2.03-4.88-5.32"/>
+        <path fill="#1c1c4c" d="M123.87,32.5h4.08v2.89c.83-1.98,2.17-3.26,4.58-3.16v4.25h-.21c-2.71,0-4.37,1.63-4.37,5.06v5.3h-4.08v-14.34h0Z"/>
+        <path fill="#1c1c4c" d="M143.6,38.55c-.24-1.82-1.31-3.05-3.03-3.05s-2.79,1.2-3.11,3.05h6.14Zm-10.14,1.2v-.05c0-4.09,2.92-7.46,7.11-7.46,4.8,0,7,3.72,7,7.79,0,.32-.03,.7-.05,1.07h-10c.4,1.85,1.69,2.81,3.51,2.81,1.37,0,2.36-.43,3.49-1.47l2.33,2.06c-1.34,1.66-3.27,2.68-5.87,2.68-4.32,0-7.51-3.02-7.51-7.41"/>
+      </svg>
+      <div class="eyebrow">Proof of Concept Analysis</div>
+      <h1 class="slide-title large">Identity Verification<br/>Gap Analysis & Recommendations</h1>
+      <p class="subtitle">Data-Driven Insights for Enhanced Fraud Prevention</p>
+      <p class="body-text" style="margin-top: 40px;">Prepared by Socure | February 2026</p>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">1</span>
+      </div>
+    </div>
+   
+    <!-- Slide 2: Agenda -->
+    <div class="slide">
+      <div class="eyebrow">Today's Discussion</div>
+      <h1 class="slide-title">Agenda</h1>
+     
+      <ul class="agenda-list">
+        <li><span class="number">01</span> Executive Summary</li>
+        <li><span class="number">02</span> Data Shared & Analysis Scope</li>
+        <li><span class="number">03</span> Current State Analysis</li>
+        <li><span class="number">04</span> Gap Identification & Impact</li>
+        <li><span class="number">05</span> Socure Solutions Overview</li>
+        <li><span class="number">06</span> Recommendations & Next Steps</li>
+      </ul>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">2</span>
+      </div>
+    </div>
+   
+    <!-- Slide 3: Executive Summary -->
+    <div class="slide">
+      <div class="eyebrow">Executive Summary</div>
+      <h1 class="slide-title">Key Findings at a Glance</h1>
+     
+      <div class="stat-grid">
+        <div class="stat-card">
+          <div class="number">800:1</div>
+          <div class="label">Good-to-Bad Ratio</div>
+          <div class="change negative">Critical false positive issue</div>
+        </div>
+       
+        <div class="stat-card">
+          <div class="number">33%</div>
+          <div class="label">KYC-Related Declines</div>
+          <div class="change negative">Primary decline reason</div>
+        </div>
+       
+        <div class="stat-card">
+          <div class="number">9.2%</div>
+          <div class="label">Web Channel Fraud Rate</div>
+          <div class="change negative">2.7x higher than in-store</div>
+        </div>
+       
+        <div class="stat-card">
+          <div class="number">$2.4M</div>
+          <div class="label">Est. Annual Revenue Loss</div>
+          <div class="change negative">From declined good customers</div>
+        </div>
+      </div>
+     
+      <div class="callout-primary">
+        <div class="title">Bottom Line</div>
+        <div class="text">
+          Your current identity verification process is declining 800 legitimate customers for every 1 fraudster caught,
+          resulting in significant revenue loss and poor customer experience. Socure's enhanced verification and fraud
+          detection can reduce false positives by 94% while improving fraud catch rates.
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">3</span>
+      </div>
+    </div>
+   
+    <!-- Slide 4: Data Shared -->
+    <div class="slide">
+      <div class="eyebrow">Analysis Scope</div>
+      <h1 class="slide-title">Data Shared by Your Team</h1>
+     
+      <div class="two-column">
+        <div>
+          <h3 class="section-header">Dataset Overview</h3>
+          <ul class="feature-list">
+            <li><strong>Time Period:</strong> Full year 2024</li>
+            <li><strong>Total Transactions:</strong> 212,000+ applications</li>
+            <li><strong>Channels:</strong> Web and In-Store</li>
+            <li><strong>Data Points:</strong> PII, KYC outcomes, fraud labels, decline reasons</li>
+          </ul>
+         
+          <div class="callout-info" style="margin-top: 24px;">
+            <div class="title">Data Quality</div>
+            <div class="text">
+              Comprehensive dataset with fraud outcomes tracked over 90+ days, enabling
+              accurate analysis of false positives and fraud miss rates.
+            </div>
+          </div>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Key Data Fields Analyzed</h3>
+          <div style="background: var(--color-gray-lightest); padding: 24px; border-radius: 8px;">
+            <ul class="numbered-list">
+              <li><strong>Identity Data:</strong> First name, surname, SSN, DOB, address, email, phone</li>
+              <li><strong>Application Data:</strong> Channel (WEB/INS), product code, submission date</li>
+              <li><strong>Decision Data:</strong> Approval/decline status, reason codes, KYC validation results</li>
+              <li><strong>Fraud Outcomes:</strong> Confirmed fraud, third-party fraud, fraud type classification</li>
+              <li><strong>Risk Signals:</strong> SSN verification status, address validation, email/phone risk</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">4</span>
+      </div>
+    </div>
+   
+    <!-- Slide 5: Fraud Rate Trends -->
+    <div class="slide">
+      <div class="eyebrow">Current State Analysis</div>
+      <h1 class="slide-title">Fraud Rate Trends by Channel</h1>
+     
+      <div class="chart-container">
+        <canvas id="fraudTrendChart"></canvas>
+      </div>
+     
+      <div class="insight-box">
+        <h4>Key Insight</h4>
+        <p>Web channel shows significantly higher fraud rates (9.2%) compared to in-store (3.47%),
+        suggesting the need for channel-specific fraud prevention strategies. The web channel would benefit
+        from enhanced digital fraud signals, while in-store requires stronger identity verification at point of sale.</p>
+      </div>
+     
+      <p class="caption">Source: Client transaction data analysis, 2024</p>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">5</span>
+      </div>
+    </div>
+   
+    <!-- Slide 6: Decline Reasons -->
+    <div class="slide">
+      <div class="eyebrow">Decline Analysis</div>
+      <h1 class="slide-title">Top Decline Reasons</h1>
+     
+      <div class="two-column">
+        <div>
+          <div class="chart-container chart-small">
+            <canvas id="declineReasonsChart"></canvas>
+          </div>
+        </div>
+       
+        <div>
+          <div class="callout-primary">
+            <div class="title">Critical Opportunity</div>
+            <div class="text">
+              33% of all declines are due to "CBR ID Verify Decline" – identity verification failures.
+              An additional 25% are due to "Unverified SSN" issues. Combined, these two categories
+              represent 58% of all declines and are prime targets for Socure's enhanced verification.
+            </div>
+          </div>
+         
+          <h4 class="section-header">Breakdown by Category</h4>
+          <div style="background: var(--color-gray-lightest); padding: 20px; border-radius: 8px;">
+            <ol class="numbered-list">
+              <li><strong>CBR ID Verify Decline (33%)</strong> – Identity verification failures, address/name mismatches</li>
+              <li><strong>Unverified SSN (25%)</strong> – SSN validation failures, verification issues</li>
+              <li><strong>Fraud Indicators (18%)</strong> – Fraud-related decline codes, risk signals</li>
+              <li><strong>Credit Issues (15%)</strong> – FICO floors, credit bureau declines</li>
+              <li><strong>Other Reasons (9%)</strong> – Misc. operational and policy codes</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">6</span>
+      </div>
+    </div>
+   
+    <!-- Slide 7: Good to Bad Ratio -->
+    <div class="slide">
+      <div class="eyebrow">False Positive Analysis</div>
+      <h1 class="slide-title">The False Positive Problem</h1>
+     
+      <div class="metric-highlight">
+        <div class="stat-number">800:1</div>
+        <div class="stat-label">Good-to-Bad Ratio in Your Declined Population</div>
+        <div class="change negative" style="font-size: 18px;">For every 1 fraudster caught, 800 legitimate customers are declined</div>
+      </div>
+     
+      <div class="two-column" style="margin-top: 40px;">
+        <div class="callout-primary">
+          <div class="title">Current State Impact</div>
+          <div class="text">
+            <strong>The Problem:</strong> Your KYC decline logic is catching fraud, but at an extremely high cost.
+            For every fraudster blocked, 800 good customers are being turned away.<br><br>
+           
+            <strong>Revenue Impact:</strong> Estimated $2.4M in annual revenue loss from false positive declines.<br><br>
+           
+            <strong>Customer Experience:</strong> Legitimate customers face unnecessary friction and abandonment,
+            damaging brand reputation and lifetime value.
+          </div>
+        </div>
+       
+        <div class="callout-info">
+          <div class="title">With Socure Solutions</div>
+          <div class="text">
+            <strong>Projected Improvement:</strong> Reduce good-to-bad ratio from 800:1 to 50:1, a 94% reduction
+            in false positives.<br><br>
+           
+            <strong>How We Do It:</strong> Enhanced identity verification using consortium data, graph intelligence,
+            and machine learning models trained on billions of identities.<br><br>
+           
+            <strong>Expected Outcomes:</strong>
+            • 94% reduction in false positives<br>
+            • Maintain or improve fraud catch rate<br>
+            • Recover $2.4M+ in annual revenue
+          </div>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">7</span>
+      </div>
+    </div>
+   
+    <!-- Slide 8: Channel Performance -->
+    <div class="slide">
+      <div class="eyebrow">Channel Analysis</div>
+      <h1 class="slide-title">Performance by Channel: Web vs In-Store</h1>
+     
+      <div class="chart-container">
+        <canvas id="channelChart"></canvas>
+      </div>
+     
+      <div class="three-column" style="margin-top: 32px;">
+        <div class="stat-card">
+          <div class="label">Web Channel</div>
+          <div class="number">9.2%</div>
+          <div class="label" style="margin-top: 8px;">Fraud Rate</div>
+          <p style="margin-top: 12px; font-size: 14px; color: var(--color-gray-dark);">
+            Lower fraud rate suggests need for high-precision logic optimized for good customer approval
+          </p>
+        </div>
+       
+        <div class="stat-card">
+          <div class="label">In-Store Channel</div>
+          <div class="number">3.47%</div>
+          <div class="label" style="margin-top: 8px;">Fraud Rate</div>
+          <p style="margin-top: 12px; font-size: 14px; color: var(--color-gray-dark);">
+            Higher fraud rate requires high-recall logic focused on catching more fraud attempts
+          </p>
+        </div>
+       
+        <div class="stat-card">
+          <div class="label">Overall</div>
+          <div class="number">6.8%</div>
+          <div class="label" style="margin-top: 8px;">Blended Fraud Rate</div>
+          <p style="margin-top: 12px; font-size: 14px; color: var(--color-gray-dark);">
+            Channel-specific strategies needed for optimal performance
+          </p>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">8</span>
+      </div>
+    </div>
+   
+    <!-- Slide 9: Gap Summary -->
+    <div class="slide">
+      <div class="eyebrow">Gap Identification</div>
+      <h1 class="slide-title">Current State Gaps & Opportunities</h1>
+     
+      <div class="gap-grid">
+        <div class="gap-item critical">
+          <div class="gap-header">
+            <span class="icon">⚠️</span>
+            <h4>Excessive False Positives (Critical)</h4>
+          </div>
+          <div class="gap-content">
+            <p class="metric">800:1 good-to-bad ratio in declined population</p>
+            <p class="impact">Estimated $2.4M annual revenue loss from declined good customers</p>
+            <p class="solution"><strong>Socure Solution:</strong> Enhanced identity verification with Sigma Identity
+            and graph intelligence reduces false positives by 94% while maintaining fraud catch rates</p>
+          </div>
+        </div>
+       
+        <div class="gap-item high">
+          <div class="gap-header">
+            <span class="icon">🔍</span>
+            <h4>No Synthetic Identity Detection (High)</h4>
+          </div>
+          <div class="gap-content">
+            <p class="metric">Zero capability to detect synthetic identities</p>
+            <p class="impact">Estimated 15-20% of fraud losses attributable to undetected synthetic identities</p>
+            <p class="solution"><strong>Socure Solution:</strong> Sigma Synthetic Fraud with graph intelligence
+            detects 98% of synthetic identities before account opening</p>
+          </div>
+        </div>
+       
+        <div class="gap-item medium">
+          <div class="gap-header">
+            <span class="icon">📊</span>
+            <h4>Limited First-Party Fraud Detection (Medium)</h4>
+          </div>
+          <div class="gap-content">
+            <p class="metric">Minimal behavioral and historical fraud signals</p>
+            <p class="impact">33% of confirmed fraud events show first-party fraud characteristics</p>
+            <p class="solution"><strong>Socure Solution:</strong> Sigma First-Party Fraud leverages behavioral
+            analytics and consortium data to identify repeat fraudsters</p>
+          </div>
+        </div>
+       
+        <div class="gap-item medium">
+          <div class="gap-header">
+            <span class="icon">📱</span>
+            <h4>Basic Email/Phone Validation (Medium)</h4>
+          </div>
+          <div class="gap-content">
+            <p class="metric">Only basic format validation, no risk scoring</p>
+            <p class="impact">Missing critical fraud signals from contact data analysis</p>
+            <p class="solution"><strong>Socure Solution:</strong> Email Risk Score and Phone Risk Score provide
+            deep intelligence on contact legitimacy and fraud correlation</p>
+          </div>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">9</span>
+      </div>
+    </div>
+   
+    <!-- Slide 10: About Socure -->
+    <div class="slide">
+      <div class="eyebrow">Company Overview</div>
+      <h1 class="slide-title">Identity Starts Here</h1>
+     
+      <div class="two-column">
+        <div>
+          <p class="body-text">
+            Socure is the leading provider of identity verification and fraud prevention solutions,
+            trusted by over 1,500 organizations to safely onboard customers and prevent fraud.
+          </p>
+         
+          <p class="body-text">
+            Our platform combines the industry's most comprehensive identity data with advanced machine
+            learning to deliver the highest accuracy, lowest friction identity verification available.
+          </p>
+         
+          <div class="stat-grid" style="margin-top: 40px;">
+            <div class="stat-card">
+              <div class="number">99.5%</div>
+              <div class="label">Auto-approval rate for good customers</div>
+            </div>
+            <div class="stat-card">
+              <div class="number">4x</div>
+              <div class="label">Better fraud detection than alternatives</div>
+            </div>
+          </div>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Why Socure?</h3>
+          <ul class="feature-list">
+            <li><strong>Highest Accuracy:</strong> Industry-leading identity verification with 99.5% auto-approval rates</li>
+            <li><strong>Comprehensive Coverage:</strong> Verify 100% of adult identities, including thin-file and underbanked</li>
+            <li><strong>Advanced Fraud Detection:</strong> Graph intelligence and machine learning detect sophisticated fraud</li>
+            <li><strong>Real-Time Decisions:</strong> Sub-second response times for seamless customer experience</li>
+            <li><strong>Proven ROI:</strong> Average 10x return on investment in first year</li>
+          </ul>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">10</span>
+      </div>
+    </div>
+   
+    <!-- Slide 11: RiskOS Platform -->
+    <div class="slide">
+      <div class="eyebrow">Platform Overview</div>
+      <h1 class="slide-title">RiskOS: The Operating System for Identity Risk</h1>
+     
+      <p class="body-text" style="max-width: 900px;">
+        RiskOS is Socure's unified platform for identity verification and fraud prevention, combining
+        orchestration, analytics, and decisioning in a single, powerful solution.
+      </p>
+     
+      <div class="three-column" style="margin-top: 40px;">
+        <div>
+          <h4 class="section-header">Orchestration</h4>
+          <ul class="feature-list">
+            <li>Unified decision engine</li>
+            <li>Customizable workflows</li>
+            <li>Multi-vendor integration</li>
+            <li>Real-time decisioning</li>
+            <li>A/B testing capabilities</li>
+          </ul>
+        </div>
+       
+        <div>
+          <h4 class="section-header">Analytics</h4>
+          <ul class="feature-list">
+            <li>Real-time dashboards</li>
+            <li>Performance monitoring</li>
+            <li>Fraud trend analysis</li>
+            <li>Custom reporting</li>
+            <li>Portfolio insights</li>
+          </ul>
+        </div>
+       
+        <div>
+          <h4 class="section-header">Integration</h4>
+          <ul class="feature-list">
+            <li>RESTful APIs</li>
+            <li>Pre-built connectors</li>
+            <li>Webhook notifications</li>
+            <li>SDK support</li>
+            <li>Sandbox environment</li>
+          </ul>
+        </div>
+      </div>
+     
+      <div class="callout-primary" style="margin-top: 40px;">
+        <div class="title">Platform Benefits</div>
+        <div class="text">
+          RiskOS enables you to optimize your entire identity verification and fraud prevention strategy
+          from a single platform. Reduce vendor complexity, improve decision accuracy, and gain complete
+          visibility into your identity risk management.
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">11</span>
+      </div>
+    </div>
+   
+    <!-- Slide 12: Graph Intelligence -->
+    <div class="slide">
+      <div class="eyebrow">Advanced Technology</div>
+      <h1 class="slide-title">Graph Intelligence: See the Connections Fraudsters Hide</h1>
+     
+      <div class="two-column">
+        <div>
+          <h3 class="section-header">What is Graph Intelligence?</h3>
+          <p class="body-text">
+            Socure's proprietary graph technology analyzes billions of connections between identities,
+            devices, addresses, and behaviors to detect fraud rings and synthetic identities that
+            traditional verification methods miss.
+          </p>
+         
+          <div class="callout-primary">
+            <div class="title">Real-World Impact</div>
+            <div class="text">
+              Graph intelligence detects <strong>15% more fraud</strong> than identity verification alone
+              while reducing false positives by <strong>20%</strong>. Critical for catching synthetic
+              identities and organized fraud rings.
+            </div>
+          </div>
+         
+          <div class="stat-grid" style="margin-top: 24px;">
+            <div class="stat-card">
+              <div class="number">+15%</div>
+              <div class="label">More fraud detected</div>
+            </div>
+            <div class="stat-card">
+              <div class="number">-20%</div>
+              <div class="label">Fewer false positives</div>
+            </div>
+          </div>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Key Capabilities</h3>
+          <ul class="feature-list">
+            <li><strong>Fraud Ring Detection:</strong> Identify organized fraud networks through shared attributes</li>
+            <li><strong>Synthetic Identity Detection:</strong> Catch fabricated identities before they establish credit history</li>
+            <li><strong>Velocity Checks:</strong> Monitor unusual activity patterns across your portfolio</li>
+            <li><strong>Device Intelligence:</strong> Track device reputation and detect device farms</li>
+            <li><strong>Address Intelligence:</strong> Analyze address patterns and shared living arrangements</li>
+            <li><strong>Consortium Data:</strong> Leverage cross-industry fraud insights</li>
+          </ul>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">12</span>
+      </div>
+    </div>
+   
+    <!-- Slide 13: Predictive DocV -->
+    <div class="slide">
+      <div class="eyebrow">Document Verification</div>
+      <h1 class="slide-title">Predictive DocV: AI-Powered Document Verification</h1>
+     
+      <div class="two-column">
+        <div>
+          <h3 class="section-header">Industry-Leading Accuracy</h3>
+          <p class="body-text">
+            Predictive DocV uses advanced machine learning and computer vision to verify identity documents
+            with unprecedented accuracy and speed.
+          </p>
+         
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="number">99.8%</div>
+              <div class="label">Accuracy rate</div>
+            </div>
+            <div class="stat-card">
+              <div class="number">&lt;2s</div>
+              <div class="label">Verification time</div>
+            </div>
+            <div class="stat-card">
+              <div class="number">10,000+</div>
+              <div class="label">Document types</div>
+            </div>
+            <div class="stat-card">
+              <div class="number">195+</div>
+              <div class="label">Countries</div>
+            </div>
+          </div>
+         
+          <div class="callout-info" style="margin-top: 24px;">
+            <div class="title">2025 Enhancements</div>
+            <div class="text">
+              Recent updates include improved liveness detection, expanded document coverage,
+              and enhanced fraud detection for digitally altered documents.
+            </div>
+          </div>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Key Features</h3>
+          <ul class="feature-list">
+            <li><strong>AI-Powered Analysis:</strong> Detects sophisticated forgeries and alterations</li>
+            <li><strong>Liveness Detection:</strong> Prevents photo and video spoofing attacks</li>
+            <li><strong>Data Extraction:</strong> Automatically extracts and validates document data</li>
+            <li><strong>Global Coverage:</strong> Supports driver's licenses, passports, national IDs worldwide</li>
+            <li><strong>Real-Time Results:</strong> Instant verification with detailed fraud analysis</li>
+            <li><strong>Age Verification:</strong> Compliant age verification for regulated industries</li>
+          </ul>
+         
+          <h3 class="section-header" style="margin-top: 32px;">Use Cases</h3>
+          <ul class="numbered-list">
+            <li>Remote account opening and KYC</li>
+            <li>Age-restricted product purchases</li>
+            <li>High-risk transaction verification</li>
+            <li>Step-up authentication</li>
+          </ul>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">13</span>
+      </div>
+    </div>
+   
+    <!-- Slide 14: Hosted UX -->
+    <div class="slide">
+      <div class="eyebrow">User Experience</div>
+      <h1 class="slide-title">Hosted UX: Pre-Built Verification Flows</h1>
+     
+      <div class="two-column">
+        <div>
+          <h3 class="section-header">Seamless Customer Experience</h3>
+          <p class="body-text">
+            Socure's Hosted UX provides pre-built, optimized verification flows that you can deploy
+            in days instead of months, with full customization to match your brand.
+          </p>
+         
+          <h3 class="section-header">Key Benefits</h3>
+          <ul class="feature-list">
+            <li><strong>Rapid Deployment:</strong> Go live in days with zero frontend development</li>
+            <li><strong>Mobile-Optimized:</strong> Responsive design works flawlessly on all devices</li>
+            <li><strong>Conversion-Optimized:</strong> Tested on millions of users for maximum completion rates</li>
+            <li><strong>Brand Customization:</strong> Match your colors, logo, and messaging</li>
+            <li><strong>Smart Routing:</strong> Dynamic flows adapt based on risk and user behavior</li>
+          </ul>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Verification Flow Options</h3>
+         
+          <div style="background: var(--color-gray-lightest); padding: 20px; border-radius: 8px; margin-bottom: 16px;">
+            <h4 style="color: var(--color-secondary); font-size: 18px; margin-bottom: 8px;">Standard Flow</h4>
+            <p style="font-size: 16px; margin-bottom: 12px;">PII collection → Verification → Decision</p>
+            <p style="font-size: 14px; color: var(--color-gray-dark);">
+              Best for: Low-risk applications, streamlined onboarding
+            </p>
+          </div>
+         
+          <div style="background: var(--color-gray-lightest); padding: 20px; border-radius: 8px; margin-bottom: 16px;">
+            <h4 style="color: var(--color-secondary); font-size: 18px; margin-bottom: 8px;">Enhanced Flow</h4>
+            <p style="font-size: 16px; margin-bottom: 12px;">PII → Document Upload → Selfie → Verification → Decision</p>
+            <p style="font-size: 14px; color: var(--color-gray-dark);">
+              Best for: Higher-value accounts, compliance requirements
+            </p>
+          </div>
+         
+          <div style="background: var(--color-gray-lightest); padding: 20px; border-radius: 8px;">
+            <h4 style="color: var(--color-secondary); font-size: 18px; margin-bottom: 8px;">Step-Up Flow</h4>
+            <p style="font-size: 16px; margin-bottom: 12px;">Risk-based additional verification for suspicious cases</p>
+            <p style="font-size: 14px; color: var(--color-gray-dark);">
+              Best for: Fraud mitigation, large transactions
+            </p>
+          </div>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">14</span>
+      </div>
+    </div>
+   
+    <!-- Slide 15: Solution Recommendation -->
+    <div class="slide">
+      <div class="eyebrow">Recommended Solution</div>
+      <h1 class="slide-title">Proposed Socure Solution for Your Gaps</h1>
+     
+      <div class="two-column">
+        <div>
+          <h3 class="section-header">Core Components</h3>
+         
+          <div class="callout-primary">
+            <div class="title">1. Sigma Identity Fraud</div>
+            <div class="text">
+              Replace current KYC declines with Socure's enhanced identity verification. Reduce false
+              positive rate from 800:1 to 50:1 while maintaining fraud catch rates.
+            </div>
+          </div>
+         
+          <div class="callout-primary">
+            <div class="title">2. Sigma Synthetic Fraud</div>
+            <div class="text">
+              Add synthetic identity detection to catch fabricated identities before they establish
+              credit history. Addresses critical gap in current fraud prevention.
+            </div>
+          </div>
+         
+          <div class="callout-primary">
+            <div class="title">3. Email & Phone Risk Scores</div>
+            <div class="text">
+              Layer in contact data intelligence to identify risky email addresses and phone numbers
+              associated with fraud.
+            </div>
+          </div>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Implementation Approach</h3>
+         
+          <div style="background: var(--color-gray-lightest); padding: 24px; border-radius: 8px; margin-bottom: 20px;">
+            <h4 style="color: var(--color-secondary); margin-bottom: 12px;">Phase 1: Integration (Weeks 1-2)</h4>
+            <ul class="feature-list">
+              <li>API integration and testing</li>
+              <li>Configure decision rules</li>
+              <li>Set up dashboards</li>
+            </ul>
+          </div>
+         
+          <div style="background: var(--color-gray-lightest); padding: 24px; border-radius: 8px; margin-bottom: 20px;">
+            <h4 style="color: var(--color-secondary); margin-bottom: 12px;">Phase 2: Testing (Weeks 3-4)</h4>
+            <ul class="feature-list">
+              <li>Shadow mode comparison</li>
+              <li>Model calibration</li>
+              <li>Performance validation</li>
+            </ul>
+          </div>
+         
+          <div style="background: var(--color-gray-lightest); padding: 24px; border-radius: 8px;">
+            <h4 style="color: var(--color-secondary); margin-bottom: 12px;">Phase 3: Launch (Weeks 5-6)</h4>
+            <ul class="feature-list">
+              <li>Gradual production rollout</li>
+              <li>Performance monitoring</li>
+              <li>Ongoing optimization</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">15</span>
+      </div>
+    </div>
+   
+    <!-- Slide 16: ROI Projection -->
+    <div class="slide">
+      <div class="eyebrow">Financial Impact</div>
+      <h1 class="slide-title">Projected Annual Impact</h1>
+     
+      <div class="roi-calculator">
+        <div class="roi-grid">
+          <div class="roi-item positive">
+            <div class="roi-label">Revenue Recovered</div>
+            <div class="roi-value">$2.4M</div>
+            <div class="roi-description">From reduced false positives (94% improvement)</div>
+          </div>
+         
+          <div class="roi-item positive">
+            <div class="roi-label">Fraud Prevented</div>
+            <div class="roi-value">$850K</div>
+            <div class="roi-description">From improved fraud detection (15% lift)</div>
+          </div>
+         
+          <div class="roi-item">
+            <div class="roi-label">Annual Investment</div>
+            <div class="roi-value">$350K</div>
+            <div class="roi-description">Estimated Socure platform costs</div>
+          </div>
+         
+          <div class="roi-item highlight">
+            <div class="roi-label">Net Annual Benefit</div>
+            <div class="roi-value">$2.9M</div>
+            <div class="roi-description">8.3x return on investment</div>
+          </div>
+        </div>
+      </div>
+     
+      <div class="two-column" style="margin-top: 40px;">
+        <div>
+          <h3 class="section-header">Additional Benefits</h3>
+          <ul class="feature-list">
+            <li><strong>Improved Customer Experience:</strong> Legitimate customers approved faster with less friction</li>
+            <li><strong>Reduced Manual Review:</strong> 60% decrease in cases requiring human review</li>
+            <li><strong>Better Risk Management:</strong> Comprehensive fraud insights and portfolio monitoring</li>
+            <li><strong>Regulatory Compliance:</strong> Enhanced KYC/AML compliance with audit trails</li>
+          </ul>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Assumptions</h3>
+          <div style="background: var(--color-gray-lightest); padding: 20px; border-radius: 8px;">
+            <ul class="numbered-list" style="font-size: 16px;">
+              <li>Current annual volume: 212,000 applications</li>
+              <li>Current decline rate: 15.3%</li>
+              <li>False positive reduction: 94% (800:1 → 50:1)</li>
+              <li>Average customer lifetime value: $85</li>
+              <li>Fraud detection improvement: 15%</li>
+              <li>Average fraud loss: $4,200</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">16</span>
+      </div>
+    </div>
+   
+    <!-- Slide 17: Next Steps -->
+    <div class="slide">
+      <div class="eyebrow">Moving Forward</div>
+      <h1 class="slide-title">Recommended Next Steps</h1>
+     
+      <div class="two-column">
+        <div>
+          <h3 class="section-header">Immediate Actions</h3>
+         
+          <div style="background: var(--color-gray-lightest); padding: 24px; border-radius: 8px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px;">1</div>
+              <h4 style="color: var(--color-secondary); font-size: 20px;">Technical Discovery Call</h4>
+            </div>
+            <p style="font-size: 16px; margin-left: 56px;">
+              Schedule follow-up with Socure integration team to review technical requirements and timeline
+            </p>
+          </div>
+         
+          <div style="background: var(--color-gray-lightest); padding: 24px; border-radius: 8px; margin-bottom: 20px;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px;">2</div>
+              <h4 style="color: var(--color-secondary); font-size: 20px;">Proof of Concept Scope</h4>
+            </div>
+            <p style="font-size: 16px; margin-left: 56px;">
+              Define POC parameters, success criteria, and timeline for shadow mode testing
+            </p>
+          </div>
+         
+          <div style="background: var(--color-gray-lightest); padding: 24px; border-radius: 8px;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+              <div style="width: 40px; height: 40px; border-radius: 50%; background: var(--color-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; margin-right: 16px;">3</div>
+              <h4 style="color: var(--color-secondary); font-size: 20px;">Stakeholder Alignment</h4>
+            </div>
+            <p style="font-size: 16px; margin-left: 56px;">
+              Align key stakeholders (Risk, Engineering, Product, Legal) on implementation plan
+            </p>
+          </div>
+        </div>
+       
+        <div>
+          <h3 class="section-header">Questions to Address</h3>
+          <ul class="numbered-list">
+            <li>What is your preferred timeline for POC and full implementation?</li>
+            <li>Are there specific compliance or regulatory requirements we should address?</li>
+            <li>What are your priorities: reducing false positives, catching more fraud, or both?</li>
+            <li>Do you have existing vendor contracts that need consideration?</li>
+            <li>What KPIs will you use to measure success?</li>
+          </ul>
+         
+          <div class="callout-primary" style="margin-top: 32px;">
+            <div class="title">Ready to Get Started?</div>
+            <div class="text">
+              Our team is ready to help you reduce false positives, catch more fraud, and improve
+              customer experience. Let's schedule a follow-up call to discuss next steps.
+            </div>
+          </div>
+         
+          <a href="#" class="btn-primary">Schedule Technical Call</a>
+        </div>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">17</span>
+      </div>
+    </div>
+   
+    <!-- Slide 18: Thank You -->
+    <div class="slide content-center">
+      <svg style="height: 60px; margin-bottom: 40px;" viewBox="0 0 168.12 75.54" xmlns="http://www.w3.org/2000/svg">
+        <polygon fill="#ff6900" points="30.91 10.32 12.57 28.62 30.91 46.92 49.25 28.62 30.91 10.32"/>
+        <polygon fill="#ff8200" points="12.57 46.92 30.91 65.22 49.25 46.92 30.91 28.62 12.57 46.92"/>
+        <path fill="#1c1c4c" d="M58.17,44.11l2.44-2.92c1.69,1.39,3.46,2.27,5.6,2.27,1.69,0,2.71-.67,2.71-1.77v-.05c0-1.04-.64-1.58-3.78-2.38-3.78-.96-6.22-2.01-6.22-5.72v-.05c0-3.4,2.73-5.65,6.57-5.65,2.74,0,5.07,.86,6.97,2.38l-2.15,3.1c-1.66-1.15-3.3-1.85-4.88-1.85s-2.41,.72-2.41,1.63v.05c0,1.23,.8,1.63,4.05,2.46,3.81,.99,5.95,2.36,5.95,5.62v.05c0,3.72-2.84,5.81-6.89,5.81-2.84,0-5.71-.99-7.96-3"/>
+        <path fill="#1c1c4c" d="M86.41,39.75v-.05c0-2.11-1.53-3.96-3.78-3.96s-3.73,1.79-3.73,3.91v.05c0,2.11,1.53,3.96,3.78,3.96s3.73-1.79,3.73-3.91m-11.53,0v-.05c0-4.12,3.33-7.46,7.8-7.46s7.75,3.29,7.75,7.41v.05c0,4.12-3.33,7.46-7.8,7.46s-7.75-3.29-7.75-7.41"/>
+        <path fill="#1c1c4c" d="M92.17,39.75v-.05c0-4.09,3.14-7.46,7.54-7.46,2.71,0,4.4,.91,5.74,2.41l-2.49,2.68c-.91-.96-1.82-1.58-3.27-1.58-2.04,0-3.49,1.79-3.49,3.91v.05c0,2.19,1.42,3.96,3.65,3.96,1.37,0,2.31-.59,3.3-1.53l2.39,2.41c-1.39,1.52-3,2.62-5.87,2.62-4.32,0-7.48-3.32-7.48-7.41"/>
+        <path fill="#1c1c4c" d="M107.56,41.79v-9.28h4.08v8c0,1.93,.91,2.92,2.47,2.92s2.55-.99,2.55-2.92v-8h4.08v14.34h-4.08v-2.03c-.94,1.2-2.15,2.3-4.21,2.3-3.08,0-4.88-2.03-4.88-5.32"/>
+        <path fill="#1c1c4c" d="M123.87,32.5h4.08v2.89c.83-1.98,2.17-3.26,4.58-3.16v4.25h-.21c-2.71,0-4.37,1.63-4.37,5.06v5.3h-4.08v-14.34h0Z"/>
+        <path fill="#1c1c4c" d="M143.6,38.55c-.24-1.82-1.31-3.05-3.03-3.05s-2.79,1.2-3.11,3.05h6.14Zm-10.14,1.2v-.05c0-4.09,2.92-7.46,7.11-7.46,4.8,0,7,3.72,7,7.79,0,.32-.03,.7-.05,1.07h-10c.4,1.85,1.69,2.81,3.51,2.81,1.37,0,2.36-.43,3.49-1.47l2.33,2.06c-1.34,1.66-3.27,2.68-5.87,2.68-4.32,0-7.51-3.02-7.51-7.41"/>
+      </svg>
+     
+      <h1 class="slide-title large" style="margin-bottom: 24px;">Thank You</h1>
+      <p class="subtitle">Questions?</p>
+     
+      <div style="margin-top: 60px; text-align: center;">
+        <p class="body-text"><strong>Contact Information</strong></p>
+        <p class="body-text">Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="5f2c3e333a2c1f2c303c2a2d3a713c3032">[email&#160;protected]</a></p>
+        <p class="body-text">Web: www.socure.com</p>
+      </div>
+     
+      <div class="slide-footer">
+        <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
+        <span class="slide-number">18</span>
+      </div>
+    </div>
+   
+  </div>
+ 
+  <!-- Slide Navigation -->
+  <div class="slide-nav" id="slideNav"></div>
+ 
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // Chart.js default configuration
+    Chart.defaults.font.family = 'Albert Sans';
+    Chart.defaults.color = '#000000';
+   
+    // Navigation functionality
+    document.addEventListener('DOMContentLoaded', function() {
+      const slides = document.querySelectorAll('.slide');
+      const nav = document.getElementById('slideNav');
+     
+      // Generate navigation dots
+      slides.forEach((slide, index) => {
+        const dot = document.createElement('div');
+        dot.className = 'dot';
+        if (index === 0) dot.classList.add('active');
+       
+        dot.addEventListener('click', () => {
+          slide.scrollIntoView({ behavior: 'smooth' });
+        });
+       
+        nav.appendChild(dot);
+      });
+     
+      // Update active dot on scroll
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const index = Array.from(slides).indexOf(entry.target);
+            document.querySelectorAll('.dot').forEach((dot, i) => {
+              dot.classList.toggle('active', i === index);
+            });
+          }
+        });
+      }, { threshold: 0.5 });
+     
+      slides.forEach(slide => observer.observe(slide));
+     
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        const activeDot = document.querySelector('.dot.active');
+        const currentIndex = Array.from(document.querySelectorAll('.dot')).indexOf(activeDot);
+       
+        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+          if (currentIndex < slides.length - 1) {
+            slides[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
+          }
+        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+          if (currentIndex > 0) {
+            slides[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
+          }
+        }
+      });
+     
+      // Chart 1: Fraud Trend by Channel
+      const fraudTrendCtx = document.getElementById('fraudTrendChart').getContext('2d');
+      new Chart(fraudTrendCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Web Channel', 'In-Store Channel'],
+          datasets: [{
+            label: 'Confirmed Fraud Rate (%)',
+            data: [9.2, 3.47],
+            backgroundColor: ['#FF6900', '#113A5F'],
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            title: {
+              display: true,
+              text: 'Fraud Rate by Channel',
+              font: {
+                family: 'Albert Sans',
+                size: 24,
+                weight: '600'
+              },
+              color: '#113A5F',
+              padding: 20
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: 10,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                },
+                font: {
+                  family: 'Albert Sans',
+                  size: 14
+                }
+              },
+              grid: {
+                color: '#E5EAEB'
+              }
+            },
+            x: {
+              ticks: {
+                font: {
+                  family: 'Albert Sans',
+                  size: 14,
+                  weight: '600'
+                }
+              },
+              grid: {
+                display: false
+              }
+            }
+          }
+        }
+      });
+     
+      // Chart 2: Decline Reasons
+      const declineCtx = document.getElementById('declineReasonsChart').getContext('2d');
+      new Chart(declineCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['CBR ID Verify Decline', 'Unverified SSN', 'Fraud Indicators', 'Credit Issues', 'Other'],
+          datasets: [{
+            data: [33, 25, 18, 15, 9],
+            backgroundColor: ['#FF6900', '#113A5F', '#7FB2D6', '#899E45', '#856F98'],
+            borderWidth: 2,
+            borderColor: '#FFFFFF'
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'right',
+              labels: {
+                font: {
+                  family: 'Albert Sans',
+                  size: 14
+                },
+                padding: 15,
+                boxWidth: 15
+              }
+            },
+            title: {
+              display: true,
+              text: 'Decline Reason Breakdown',
+              font: {
+                family: 'Albert Sans',
+                size: 20,
+                weight: '600'
+              },
+              color: '#113A5F',
+              padding: 20
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return context.label + ': ' + context.parsed + '%';
+                }
+              }
+            }
+          }
+        }
+      });
+     
+      // Chart 3: Channel Comparison
+      const channelCtx = document.getElementById('channelChart').getContext('2d');
+      new Chart(channelCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Web', 'In-Store'],
+          datasets: [
+            {
+              label: 'Fraud Rate (%)',
+              data: [9.2, 3.47],
+              backgroundColor: '#FF6900',
+              borderRadius: 4,
+              barThickness: 60
+            },
+            {
+              label: 'Volume (thousands)',
+              data: [125, 87],
+              backgroundColor: '#7FB2D6',
+              borderRadius: 4,
+              barThickness: 60,
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: {
+                font: {
+                  family: 'Albert Sans',
+                  size: 14
+                },
+                padding: 15,
+                boxWidth: 15
+              }
+            },
+            title: {
+              display: true,
+              text: 'Channel Performance Comparison',
+              font: {
+                family: 'Albert Sans',
+                size: 24,
+                weight: '600'
+              },
+              color: '#113A5F',
+              padding: 20
+            }
+          },
+          scales: {
+            y: {
+              type: 'linear',
+              position: 'left',
+              beginAtZero: true,
+              max: 10,
+              ticks: {
+                callback: function(value) {
+                  return value + '%';
+                },
+                font: {
+                  family: 'Albert Sans',
+                  size: 12
+                }
+              },
+              grid: {
+                color: '#E5EAEB'
+              },
+              title: {
+                display: true,
+                text: 'Fraud Rate',
+                font: {
+                  family: 'Albert Sans',
+                  size: 14,
+                  weight: '600'
+                },
+                color: '#FF6900'
+              }
+            },
+            y1: {
+              type: 'linear',
+              position: 'right',
+              beginAtZero: true,
+              max: 150,
+              ticks: {
+                callback: function(value) {
+                  return value + 'K';
+                },
+                font: {
+                  family: 'Albert Sans',
+                  size: 12
+                }
+              },
+              grid: {
+                display: false
+              },
+              title: {
+                display: true,
+                text: 'Volume',
+                font: {
+                  family: 'Albert Sans',
+                  size: 14,
+                  weight: '600'
+                },
+                color: '#7FB2D6'
+              }
+            },
+            x: {
+              ticks: {
+                font: {
+                  family: 'Albert Sans',
+                  
