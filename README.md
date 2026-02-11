@@ -16,7 +16,7 @@ This presentation showcases data-driven insights for identity verification gap a
 
 ## 🚀 View Live
 
-Visit the presentation at: `https://[your-username].github.io/socure-presentation/`
+Visit the presentation at: `https://[your-username].github.io/SamplePOV/`
 
 ## 📋 Presentation Contents
 
