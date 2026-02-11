@@ -12,6 +12,10 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
  
   <style>
+    html {
+      scroll-behavior: smooth;
+    }
+
     :root {
       /* Brand Colors */
       --color-primary: #FF6900;
@@ -50,7 +54,7 @@
       position: fixed;
       left: 0;
       top: 0;
-      width: 280px;
+      width: 16.5%;
       height: 100vh;
       background: var(--color-gray-lightest);
       z-index: 1001;
@@ -59,17 +63,18 @@
       border-right: 1px solid var(--color-gray-light);
     }
 
-    .left-nav-logo {
+        .left-nav-logo {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px 16px;
-      margin-bottom: 32px;
+      align-items: flex-start;
+      padding: 20px 24px;
+      margin-bottom: 24px;
     }
 
     .left-nav-logo img {
       height: 72px;
       width: auto;
+      display: block;
+      background: transparent !important;
     }
 
     .nav-section-title {
@@ -102,8 +107,8 @@
       line-height: 1.4;
     }
 
-    .nav-item:hover {
-      background: #F4F4F5;
+        .nav-item:hover {
+      background: #E5E7EB;
       color: #18181B;
     }
 
@@ -139,11 +144,10 @@
     }
 
    
-    .presentation-container {
-      margin-left: 280px;
-      width: 100%;
-      max-width: 1920px;
-      margin: 0 auto;
+        .presentation-container {
+      margin-left: 16.5%;
+      width: 83.5%;
+      max-width: 100%;
     }
    
     .slide {
@@ -646,14 +650,17 @@
         display: none;
       }
 
-      .presentation-container {
-        margin-left: 0;
-      }
+          .presentation-container {
+      margin-left: 16.5%;
+      width: 83.5%;
+      max-width: 100%;
+    }
     }
 
     /* Mobile Responsiveness */
-    @media (max-width: 768px) {
+        @media (max-width: 768px) {
       .left-nav {
+        width: 280px;
         transform: translateX(-100%);
         transition: transform 0.3s;
       }
@@ -664,8 +671,9 @@
 
       .presentation-container {
         margin-left: 0;
-        margin-top: 0;
+        width: 100%;
       }
+    }
 
       
     }
@@ -677,7 +685,7 @@
   <!-- Left Navigation Sidebar -->
   <nav class="left-nav">
     <div class="left-nav-logo">
-      <img src="logo.png" alt="Socure">
+      <img src="logo.svg" alt="Socure">
     </div>
 
     <div class="nav-section-title">Presentation</div>
