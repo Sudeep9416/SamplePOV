@@ -736,6 +736,10 @@
       <span>Contact</span>
     </a>
   </nav>
+  
+  <!-- Right Side Navigation Dots -->
+  <div id="slideNav" class="slide-nav"></div>
+  
 
   <div class="presentation-container">
    
@@ -1607,384 +1611,93 @@
    
   </div>
  
-  <!-- Slide Navigation -->
-  <div class="slide-nav" id="slideNav"></div>
- 
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    // Chart.js default configuration
-    Chart.defaults.font.family = 'Albert Sans';
-    Chart.defaults.color = '#000000';
-   
-    // Navigation functionality
-    document.addEventListener('DOMContentLoaded', function() {
-      const slides = document.querySelectorAll('.slide');
-
-      // Left navigation click handlers
-      const leftNavItems = document.querySelectorAll('.left-nav .nav-item');
-      leftNavItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.preventDefault();
-          const slideNumber = parseInt(item.getAttribute('data-slide'));
-          if (slideNumber && slides[slideNumber - 1]) {
-            slides[slideNumber - 1].scrollIntoView({ behavior: 'smooth' });
-          }
-        });
-      });
-
-
-      const nav = document.getElementById('slideNav');
-     
-      // Generate navigation dots
-      slides.forEach((slide, index) => {
-        const dot = document.createElement('div');
-        dot.className = 'dot';
-        if (index === 0) dot.classList.add('active');
-       
-        dot.addEventListener('click', () => {
-          slide.scrollIntoView({ behavior: 'smooth' });
-        });
-       
-        nav.appendChild(dot);
-      });
-     
-      // Update active dot and left nav on scroll
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const index = Array.from(slides).indexOf(entry.target);
-            document.querySelectorAll('.dot').forEach((dot, i) => {
-              dot.classList.toggle('active', i === index);
-            });
-            // Update left nav items
-            const leftNavItems = document.querySelectorAll('.left-nav .nav-item');
-            leftNavItems.forEach(item => {
-              const slideNumber = parseInt(item.getAttribute('data-slide'));
-              item.classList.toggle('active', slideNumber === index + 1);
-            });
-          }
-        });
-      }, { threshold: 0.5 });
-     
-      slides.forEach(slide => observer.observe(slide));
-     
-      // Keyboard navigation
-      document.addEventListener('keydown', (e) => {
-        const activeDot = document.querySelector('.dot.active');
-        const currentIndex = Array.from(document.querySelectorAll('.dot')).indexOf(activeDot);
-       
-        if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-          if (currentIndex < slides.length - 1) {
-            slides[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
-          }
-        } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-          if (currentIndex > 0) {
-            slides[currentIndex - 1].scrollIntoView({ behavior: 'smooth' });
-          }
-        }
-      });
-     
-      // Chart 1: Fraud Trend by Channel
-      const fraudTrendCtx = document.getElementById('fraudTrendChart').getContext('2d');
-      new Chart(fraudTrendCtx, {
-        type: 'bar',
-        data: {
-          labels: ['Web Channel', 'In-Store Channel'],
-          datasets: [{
-            label: 'Confirmed Fraud Rate (%)',
-            data: [9.2, 3.47],
-            backgroundColor: ['#FF6900', '#113A5F'],
-            borderRadius: 4
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              display: false
-            },
-            title: {
-              display: true,
-              text: 'Fraud Rate by Channel',
-              font: {
-                family: 'Albert Sans',
-                size: 24,
-                weight: '600'
-              },
-              color: '#113A5F',
-              padding: 20
-            }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              max: 10,
-              ticks: {
-                callback: function(value) {
-                  return value + '%';
-                },
-                font: {
-                  family: 'Albert Sans',
-                  size: 14
-                }
-              },
-              grid: {
-                color: '#E5EAEB'
-              }
-            },
-            x: {
-              ticks: {
-                font: {
-                  family: 'Albert Sans',
-                  size: 14,
-                  weight: '600'
-                }
-              },
-              grid: {
-                display: false
-              }
-            }
-          }
-        }
-      });
-     
-      // Chart 2: Decline Reasons
-      const declineCtx = document.getElementById('declineReasonsChart').getContext('2d');
-      new Chart(declineCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['CBR ID Verify Decline', 'Unverified SSN', 'Fraud Indicators', 'Credit Issues', 'Other'],
-          datasets: [{
-            data: [33, 25, 18, 15, 9],
-            backgroundColor: ['#FF6900', '#113A5F', '#7FB2D6', '#899E45', '#856F98'],
-            borderWidth: 2,
-            borderColor: '#FFFFFF'
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              position: 'right',
-              labels: {
-                font: {
-                  family: 'Albert Sans',
-                  size: 14
-                },
-                padding: 15,
-                boxWidth: 15
-              }
-            },
-            title: {
-              display: true,
-              text: 'Decline Reason Breakdown',
-              font: {
-                family: 'Albert Sans',
-                size: 20,
-                weight: '600'
-              },
-              color: '#113A5F',
-              padding: 20
-            },
-            tooltip: {
-              callbacks: {
-                label: function(context) {
-                  return context.label + ': ' + context.parsed + '%';
-                }
-              }
-            }
-          }
-        }
-      });
-     
-      // Chart 3: Channel Comparison
-      const channelCtx = document.getElementById('channelChart').getContext('2d');
-      new Chart(channelCtx, {
-        type: 'bar',
-        data: {
-          labels: ['Web', 'In-Store'],
-          datasets: [
-            {
-              label: 'Fraud Rate (%)',
-              data: [9.2, 3.47],
-              backgroundColor: '#FF6900',
-              borderRadius: 4,
-              barThickness: 60
-            },
-            {
-              label: 'Volume (thousands)',
-              data: [125, 87],
-              backgroundColor: '#7FB2D6',
-              borderRadius: 4,
-              barThickness: 60,
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: {
-              labels: {
-                font: {
-                  family: 'Albert Sans',
-                  size: 14
-                },
-                padding: 15,
-                boxWidth: 15
-              }
-            },
-            title: {
-              display: true,
-              text: 'Channel Performance Comparison',
-              font: {
-                family: 'Albert Sans',
-                size: 24,
-                weight: '600'
-              },
-              color: '#113A5F',
-              padding: 20
-            }
-          },
-          scales: {
-            y: {
-              type: 'linear',
-              position: 'left',
-              beginAtZero: true,
-              max: 10,
-              ticks: {
-                callback: function(value) {
-                  return value + '%';
-                },
-                font: {
-                  family: 'Albert Sans',
-                  size: 12
-                }
-              },
-              grid: {
-                color: '#E5EAEB'
-              },
-              title: {
-                display: true,
-                text: 'Fraud Rate',
-                font: {
-                  family: 'Albert Sans',
-                  size: 14,
-                  weight: '600'
-                },
-                color: '#FF6900'
-              }
-            },
-            y1: {
-              type: 'linear',
-              position: 'right',
-              beginAtZero: true,
-              max: 150,
-              ticks: {
-                callback: function(value) {
-                  return value + 'K';
-                },
-                font: {
-                  family: 'Albert Sans',
-                  size: 12
-                }
-              },
-              grid: {
-                display: false
-              },
-              title: {
-                display: true,
-                text: 'Volume',
-                font: {
-                  family: 'Albert Sans',
-                  size: 14,
-                  weight: '600'
-                },
-                color: '#7FB2D6'
-              }
-            },
-            x: {
-              ticks: {
-                font: {
-                  family: 'Albert Sans',
-                   <!-- Chart.js -->
+  
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   
   <script>
-    // Wait for both DOM and Chart.js to be ready
-    window.addEventListener('DOMContentLoaded', function() {
-      // Small delay to ensure Chart.js is fully loaded
+    // Initialize everything when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded');
+      
+      // Delay to ensure Chart.js is loaded
       setTimeout(function() {
-        initializePresentation();
-      }, 100);
+        console.log('Initializing...');
+        initializeEverything();
+      }, 200);
     });
     
-    function initializePresentation() {
-      // Chart.js default configuration
-      if (typeof Chart !== 'undefined') {
-        Chart.defaults.font.family = 'Albert Sans';
-        Chart.defaults.color = '#000000';
+    function initializeEverything() {
+      // Check Chart.js
+      if (typeof Chart === 'undefined') {
+        console.error('Chart.js not loaded!');
+        return;
       }
-     
-      // Navigation functionality
+      console.log('Chart.js loaded ✓');
+      
+      // Configure defaults
+      Chart.defaults.font.family = 'Albert Sans';
+      Chart.defaults.color = '#000000';
+      
+      // Get elements
       const slides = document.querySelectorAll('.slide');
-      const nav = document.getElementById('slideNav');
       const leftNavItems = document.querySelectorAll('.left-nav .nav-item');
-     
-      // Generate navigation dots
-      slides.forEach((slide, index) => {
-        const dot = document.createElement('div');
-        dot.className = 'dot';
-        if (index === 0) dot.classList.add('active');
-       
-        dot.addEventListener('click', () => {
-          slide.scrollIntoView({ behavior: 'smooth' });
+      const nav = document.getElementById('slideNav');
+      
+      console.log('Found ' + slides.length + ' slides');
+      
+      // Create nav dots (only if slideNav element exists)
+      if (nav) {
+        slides.forEach((slide, index) => {
+          const dot = document.createElement('div');
+          dot.className = 'dot';
+          if (index === 0) dot.classList.add('active');
+          dot.addEventListener('click', () => slide.scrollIntoView({ behavior: 'smooth' }));
+          nav.appendChild(dot);
         });
-       
-        nav.appendChild(dot);
-      });
-
-      // Left navigation click handlers
+      } else {
+        console.warn('slideNav element not found - right navigation disabled');
+      }
+      
+      // Left nav click handlers
       leftNavItems.forEach(item => {
         item.addEventListener('click', (e) => {
           e.preventDefault();
-          const slideNumber = parseInt(item.getAttribute('data-slide'));
-          if (slideNumber && slides[slideNumber - 1]) {
-            slides[slideNumber - 1].scrollIntoView({ behavior: 'smooth' });
+          leftNavItems.forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+          const slideNum = parseInt(item.getAttribute('data-slide'));
+          if (slideNum && slides[slideNum - 1]) {
+            slides[slideNum - 1].scrollIntoView({ behavior: 'smooth' });
           }
         });
       });
-
-     
-      // Update active states on scroll
+      
+      // Scroll observer
       const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const index = Array.from(slides).indexOf(entry.target);
-            
-            // Update right nav dots
             document.querySelectorAll('.dot').forEach((dot, i) => {
               dot.classList.toggle('active', i === index);
             });
-
-            // Update left nav items
             leftNavItems.forEach(item => {
-              const slideNumber = parseInt(item.getAttribute('data-slide'));
-              item.classList.toggle('active', slideNumber === index + 1);
+              const slideNum = parseInt(item.getAttribute('data-slide'));
+              if (slideNum === index + 1) {
+                item.classList.add('active');
+              } else {
+                item.classList.remove('active');
+              }
             });
           }
         });
       }, { threshold: 0.5 });
-     
+      
       slides.forEach(slide => observer.observe(slide));
-     
-      // Keyboard navigation
+      
+      // Keyboard nav
       document.addEventListener('keydown', (e) => {
         const activeDot = document.querySelector('.dot.active');
         const currentIndex = Array.from(document.querySelectorAll('.dot')).indexOf(activeDot);
-       
         if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
           if (currentIndex < slides.length - 1) {
             slides[currentIndex + 1].scrollIntoView({ behavior: 'smooth' });
@@ -1996,17 +1709,18 @@
         }
       });
       
-      // Initialize Charts
-      if (typeof Chart === 'undefined') {
-        console.error('Chart.js not loaded');
-        return;
-      }
-     
-      // Chart 1: Fraud Trend by Channel
-      const fraudTrendCanvas = document.getElementById('fraudTrendChart');
-      if (fraudTrendCanvas) {
-        const fraudTrendCtx = fraudTrendCanvas.getContext('2d');
-        new Chart(fraudTrendCtx, {
+      // Initialize charts
+      initCharts();
+    }
+    
+    function initCharts() {
+      console.log('Initializing charts...');
+      
+      // Chart 1: Fraud Rate by Channel
+      const c1 = document.getElementById('fraudTrendChart');
+      if (c1) {
+        console.log('Creating chart 1...');
+        new Chart(c1.getContext('2d'), {
           type: 'bar',
           data: {
             labels: ['Web Channel', 'In-Store Channel'],
@@ -2021,17 +1735,11 @@
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-              legend: {
-                display: false
-              },
+              legend: { display: false },
               title: {
                 display: true,
                 text: 'Fraud Rate by Channel',
-                font: {
-                  family: 'Albert Sans',
-                  size: 24,
-                  weight: '600'
-                },
+                font: { family: 'Albert Sans', size: 24, weight: '600' },
                 color: '#113A5F',
                 padding: 20
               }
@@ -2041,40 +1749,26 @@
                 beginAtZero: true,
                 max: 10,
                 ticks: {
-                  callback: function(value) {
-                    return value + '%';
-                  },
-                  font: {
-                    family: 'Albert Sans',
-                    size: 14
-                  }
+                  callback: function(val) { return val + '%'; },
+                  font: { family: 'Albert Sans', size: 14 }
                 },
-                grid: {
-                  color: '#E5EAEB'
-                }
+                grid: { color: '#E5EAEB' }
               },
               x: {
-                ticks: {
-                  font: {
-                    family: 'Albert Sans',
-                    size: 14,
-                    weight: '600'
-                  }
-                },
-                grid: {
-                  display: false
-                }
+                ticks: { font: { family: 'Albert Sans', size: 14, weight: '600' } },
+                grid: { display: false }
               }
             }
           }
         });
+        console.log('Chart 1 created ✓');
       }
-     
+      
       // Chart 2: Decline Reasons
-      const declineCanvas = document.getElementById('declineReasonsChart');
-      if (declineCanvas) {
-        const declineCtx = declineCanvas.getContext('2d');
-        new Chart(declineCtx, {
+      const c2 = document.getElementById('declineReasonsChart');
+      if (c2) {
+        console.log('Creating chart 2...');
+        new Chart(c2.getContext('2d'), {
           type: 'doughnut',
           data: {
             labels: ['CBR ID Verify Decline', 'Unverified SSN', 'Fraud Indicators', 'Credit Issues', 'Other'],
@@ -2092,10 +1786,7 @@
               legend: {
                 position: 'right',
                 labels: {
-                  font: {
-                    family: 'Albert Sans',
-                    size: 14
-                  },
+                  font: { family: 'Albert Sans', size: 14 },
                   padding: 15,
                   boxWidth: 15
                 }
@@ -2103,11 +1794,7 @@
               title: {
                 display: true,
                 text: 'Decline Reason Breakdown',
-                font: {
-                  family: 'Albert Sans',
-                  size: 20,
-                  weight: '600'
-                },
+                font: { family: 'Albert Sans', size: 20, weight: '600' },
                 color: '#113A5F',
                 padding: 20
               },
@@ -2121,13 +1808,14 @@
             }
           }
         });
+        console.log('Chart 2 created ✓');
       }
-     
-      // Chart 3: Channel Comparison
-      const channelCanvas = document.getElementById('channelChart');
-      if (channelCanvas) {
-        const channelCtx = channelCanvas.getContext('2d');
-        new Chart(channelCtx, {
+      
+      // Chart 3: Channel Performance
+      const c3 = document.getElementById('channelChart');
+      if (c3) {
+        console.log('Creating chart 3...');
+        new Chart(c3.getContext('2d'), {
           type: 'bar',
           data: {
             labels: ['Web', 'In-Store'],
@@ -2155,10 +1843,7 @@
             plugins: {
               legend: {
                 labels: {
-                  font: {
-                    family: 'Albert Sans',
-                    size: 14
-                  },
+                  font: { family: 'Albert Sans', size: 14 },
                   padding: 15,
                   boxWidth: 15
                 }
@@ -2166,11 +1851,7 @@
               title: {
                 display: true,
                 text: 'Channel Performance Comparison',
-                font: {
-                  family: 'Albert Sans',
-                  size: 24,
-                  weight: '600'
-                },
+                font: { family: 'Albert Sans', size: 24, weight: '600' },
                 color: '#113A5F',
                 padding: 20
               }
@@ -2182,25 +1863,14 @@
                 beginAtZero: true,
                 max: 10,
                 ticks: {
-                  callback: function(value) {
-                    return value + '%';
-                  },
-                  font: {
-                    family: 'Albert Sans',
-                    size: 12
-                  }
+                  callback: function(val) { return val + '%'; },
+                  font: { family: 'Albert Sans', size: 12 }
                 },
-                grid: {
-                  color: '#E5EAEB'
-                },
+                grid: { color: '#E5EAEB' },
                 title: {
                   display: true,
                   text: 'Fraud Rate',
-                  font: {
-                    family: 'Albert Sans',
-                    size: 14,
-                    weight: '600'
-                  },
+                  font: { family: 'Albert Sans', size: 14, weight: '600' },
                   color: '#FF6900'
                 }
               },
@@ -2210,47 +1880,30 @@
                 beginAtZero: true,
                 max: 150,
                 ticks: {
-                  callback: function(value) {
-                    return value + 'K';
-                  },
-                  font: {
-                    family: 'Albert Sans',
-                    size: 12
-                  }
+                  callback: function(val) { return val + 'K'; },
+                  font: { family: 'Albert Sans', size: 12 }
                 },
-                grid: {
-                  display: false
-                },
+                grid: { display: false },
                 title: {
                   display: true,
                   text: 'Volume',
-                  font: {
-                    family: 'Albert Sans',
-                    size: 14,
-                    weight: '600'
-                  },
+                  font: { family: 'Albert Sans', size: 14, weight: '600' },
                   color: '#7FB2D6'
                 }
               },
               x: {
-                ticks: {
-                  font: {
-                    family: 'Albert Sans',
-                    size: 14,
-                    weight: '600'
-                  }
-                },
-                grid: {
-                  display: false
-                }
+                ticks: { font: { family: 'Albert Sans', size: 14, weight: '600' } },
+                grid: { display: false }
               }
             }
           }
         });
+        console.log('Chart 3 created ✓');
       }
       
-      console.log('Charts initialized successfully');
+      console.log('All charts initialized!');
     }
   </script>
 
- 
+</body>
+</html>
