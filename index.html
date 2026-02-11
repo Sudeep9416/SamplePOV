@@ -869,18 +869,23 @@
       <div class="eyebrow">Current State Analysis</div>
       <h1 class="slide-title">Fraud Rate Trends by Channel</h1>
      
-      <div class="chart-container">
-        <canvas id="fraudTrendChart"></canvas>
+      <div class="two-column">
+        <div>
+          <div class="chart-container" style="height: 400px;">
+            <canvas id="fraudTrendChart"></canvas>
+          </div>
+          <p class="caption" style="margin-top: 16px;">Source: Client transaction data analysis, 2024</p>
+        </div>
+       
+        <div>
+          <div class="insight-box">
+            <h4>Key Insight</h4>
+            <p>Web channel shows significantly higher fraud rates (9.2%) compared to in-store (3.47%),
+            suggesting the need for channel-specific fraud prevention strategies. The web channel would benefit
+            from enhanced digital fraud signals, while in-store requires stronger identity verification at point of sale.</p>
+          </div>
+        </div>
       </div>
-     
-      <div class="insight-box">
-        <h4>Key Insight</h4>
-        <p>Web channel shows significantly higher fraud rates (9.2%) compared to in-store (3.47%),
-        suggesting the need for channel-specific fraud prevention strategies. The web channel would benefit
-        from enhanced digital fraud signals, while in-store requires stronger identity verification at point of sale.</p>
-      </div>
-     
-      <p class="caption">Source: Client transaction data analysis, 2024</p>
      
       <div class="slide-footer">
         <span class="confidential">© 2026 Socure, Inc. – Confidential and Proprietary</span>
@@ -1026,56 +1031,50 @@
       <div class="eyebrow">Gap Identification</div>
       <h1 class="slide-title">Current State Gaps & Opportunities</h1>
      
-      <div class="gap-grid">
-        <div class="gap-item critical">
-          <div class="gap-header">
-            <span class="icon">⚠️</span>
-            <h4>Excessive False Positives (Critical)</h4>
-          </div>
-          <div class="gap-content">
-            <p class="metric">800:1 good-to-bad ratio in declined population</p>
-            <p class="impact">Estimated $2.4M annual revenue loss from declined good customers</p>
-            <p class="solution"><strong>Socure Solution:</strong> Enhanced identity verification with Sigma Identity
-            and graph intelligence reduces false positives by 94% while maintaining fraud catch rates</p>
+      <div class="two-column">
+        <div class="callout-primary">
+          <div class="title">Excessive False Positives</div>
+          <div class="text">
+            <strong>Current State:</strong> 800:1 good-to-bad ratio in declined population<br><br>
+            
+            <strong>Impact:</strong> Estimated $2.4M annual revenue loss from declined good customers<br><br>
+            
+            <strong>Socure Solution:</strong> Enhanced identity verification with Sigma Identity and graph intelligence reduces false positives by 94% while maintaining fraud catch rates
           </div>
         </div>
        
-        <div class="gap-item high">
-          <div class="gap-header">
-            <span class="icon">🔍</span>
-            <h4>No Synthetic Identity Detection (High)</h4>
+        <div class="callout-info">
+          <div class="title">No Synthetic Identity Detection</div>
+          <div class="text">
+            <strong>Current State:</strong> Zero capability to detect synthetic identities<br><br>
+            
+            <strong>Impact:</strong> Estimated 15-20% of fraud losses attributable to undetected synthetic identities<br><br>
+            
+            <strong>Socure Solution:</strong> Sigma Synthetic Fraud with graph intelligence detects 98% of synthetic identities before account opening
           </div>
-          <div class="gap-content">
-            <p class="metric">Zero capability to detect synthetic identities</p>
-            <p class="impact">Estimated 15-20% of fraud losses attributable to undetected synthetic identities</p>
-            <p class="solution"><strong>Socure Solution:</strong> Sigma Synthetic Fraud with graph intelligence
-            detects 98% of synthetic identities before account opening</p>
+        </div>
+      </div>
+     
+      <div class="two-column" style="margin-top: 24px;">
+        <div class="callout-primary">
+          <div class="title">Limited First-Party Fraud Detection</div>
+          <div class="text">
+            <strong>Current State:</strong> Minimal behavioral and historical fraud signals<br><br>
+            
+            <strong>Impact:</strong> 33% of confirmed fraud events show first-party fraud characteristics<br><br>
+            
+            <strong>Socure Solution:</strong> Sigma First-Party Fraud leverages behavioral analytics and consortium data to identify repeat fraudsters
           </div>
         </div>
        
-        <div class="gap-item medium">
-          <div class="gap-header">
-            <span class="icon">📊</span>
-            <h4>Limited First-Party Fraud Detection (Medium)</h4>
-          </div>
-          <div class="gap-content">
-            <p class="metric">Minimal behavioral and historical fraud signals</p>
-            <p class="impact">33% of confirmed fraud events show first-party fraud characteristics</p>
-            <p class="solution"><strong>Socure Solution:</strong> Sigma First-Party Fraud leverages behavioral
-            analytics and consortium data to identify repeat fraudsters</p>
-          </div>
-        </div>
-       
-        <div class="gap-item medium">
-          <div class="gap-header">
-            <span class="icon">📱</span>
-            <h4>Basic Email/Phone Validation (Medium)</h4>
-          </div>
-          <div class="gap-content">
-            <p class="metric">Only basic format validation, no risk scoring</p>
-            <p class="impact">Missing critical fraud signals from contact data analysis</p>
-            <p class="solution"><strong>Socure Solution:</strong> Email Risk Score and Phone Risk Score provide
-            deep intelligence on contact legitimacy and fraud correlation</p>
+        <div class="callout-info">
+          <div class="title">Basic Email/Phone Validation</div>
+          <div class="text">
+            <strong>Current State:</strong> Only basic format validation, no risk scoring<br><br>
+            
+            <strong>Impact:</strong> Missing critical fraud signals from contact data analysis<br><br>
+            
+            <strong>Socure Solution:</strong> Email Risk Score and Phone Risk Score provide deep intelligence on contact legitimacy and fraud correlation
           </div>
         </div>
       </div>
