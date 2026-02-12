@@ -116,19 +116,20 @@
       font-weight: 500;
     }
 
-    .nav-item-icon {
+    .nav-item-icon, .nav-item i {
       width: 20px;
-      margin-right: 10px;
-      font-size: 16px;
-      display: flex;
+      height: 20px;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      opacity: 0.7;
-      color: inherit;
+      margin-right: 12px;
+      font-size: 16px;
+      color: var(--color-secondary);
     }
 
-    .nav-item.active .nav-item-icon {
-      opacity: 1;
+    .nav-item.active .nav-item-icon, 
+    .nav-item.active i {
+      color: var(--color-white);
     }
 
     .nav-item-arrow {
@@ -158,7 +159,8 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-    }
+    
+      padding-top: 60px;}
    
     /* Navigation */
     .slide-nav {
@@ -202,17 +204,22 @@
     }
    
     .slide-title {
-      font-weight: 700;
+      font-family: var(--font-primary);
+      font-weight: 300;
       font-size: 48px;
       line-height: 1.2;
+      letter-spacing: -0.01em;
       color: var(--color-secondary);
       margin-bottom: 32px;
     }
    
     .slide-title.large {
-      font-family: var(--font-accent);
-      font-size: 72px;
-      line-height: 1.1;
+      font-family: var(--font-primary);
+      font-size: 76px;
+      font-weight: 300;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--color-secondary);
     }
    
     .section-header {
@@ -639,7 +646,8 @@
       .slide {
         page-break-after: always;
         height: 100vh;
-      }
+      
+      padding-top: 60px;}
      
       .slide-nav, .left-nav {
         display: none;
@@ -672,7 +680,112 @@
 
       
     }
-  </style>
+  
+    /* Subtle Wavy Animated Background */
+    @keyframes subtleWave {
+      0% {
+        transform: translate(0, 0) scale(1);
+      }
+      25% {
+        transform: translate(-2%, 2%) scale(1.02);
+      }
+      50% {
+        transform: translate(-3%, -2%) scale(1);
+      }
+      75% {
+        transform: translate(2%, -3%) scale(0.98);
+      }
+      100% {
+        transform: translate(0, 0) scale(1);
+      }
+    }
+    
+    @keyframes subtleFlow {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+    
+    .wave-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+    
+    .wave-background::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        135deg,
+        rgba(17, 58, 95, 0.08) 0%,
+        rgba(127, 178, 214, 0.12) 25%,
+        rgba(255, 105, 0, 0.06) 50%,
+        rgba(127, 178, 214, 0.12) 75%,
+        rgba(17, 58, 95, 0.08) 100%
+      );
+      background-size: 400% 400%;
+      animation: subtleFlow 30s ease-in-out infinite, subtleWave 20s ease-in-out infinite;
+      opacity: 0.9;
+    }
+    
+    .wave-background::after {
+      content: '';
+      position: absolute;
+      top: -30%;
+      right: -30%;
+      width: 150%;
+      height: 150%;
+      background: radial-gradient(
+        circle at center,
+        rgba(255, 105, 0, 0.10) 0%,
+        rgba(127, 178, 214, 0.08) 40%,
+        transparent 70%
+      );
+      animation: subtleWave 25s ease-in-out infinite reverse;
+      opacity: 0.8;
+    }
+    
+    .slide.content-center {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    
+    .slide.content-center > *:not(.wave-background) {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .slide.content-center .slide-footer {
+      position: absolute;
+      bottom: 0;
+      left: calc(16.5% + 80px);
+      right: 0;
+    }
+
+</style>
+
+  <!-- Tabler Icons -->
+        <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
 </head>
 <body>
   
@@ -686,50 +799,50 @@
     <div class="nav-section-title">Presentation</div>
 
     <a class="nav-item" data-slide="2">
-      <span class="nav-item-icon">☰</span>
+      <i class="fa-solid fa-table-cells"></i>
       <span>Overview</span>
     </a>
 
     <a class="nav-item" data-slide="3">
-      <span class="nav-item-icon">◫</span>
+      <i class="fa-solid fa-chalkboard-user"></i>
       <span>Executive Summary</span>
     </a>
 
     <div class="nav-section-title">Analysis</div>
 
     <a class="nav-item" data-slide="5">
-      <span class="nav-item-icon">↗</span>
+      <i class="fa-solid fa-chart-line"></i>
       <span>Data Analysis</span>
       <span class="nav-item-arrow">›</span>
     </a>
 
     <a class="nav-item" data-slide="9">
-      <span class="nav-item-icon">⚠</span>
+      <i class="fa-solid fa-circle-exclamation"></i>
       <span>Gap Identification</span>
     </a>
 
     <div class="nav-section-title">Solutions</div>
 
     <a class="nav-item" data-slide="10">
-      <span class="nav-item-icon">◉</span>
+      <i class="fa-solid fa-building"></i>
       <span>Socure Solutions</span>
       <span class="nav-item-arrow">›</span>
     </a>
 
     <a class="nav-item" data-slide="16">
-      <span class="nav-item-icon">$</span>
+      <i class="fa-solid fa-calculator"></i>
       <span>ROI Projections</span>
     </a>
 
     <div class="nav-section-title">Next Steps</div>
 
     <a class="nav-item" data-slide="17">
-      <span class="nav-item-icon">→</span>
+      <i class="fa-solid fa-list-check"></i>
       <span>Recommendations</span>
     </a>
 
     <a class="nav-item" data-slide="18">
-      <span class="nav-item-icon">✉</span>
+      <i class="fa-solid fa-envelope"></i>
       <span>Contact</span>
     </a>
   </nav>
@@ -743,9 +856,10 @@
     <!-- Slide 1: Title -->
     <div class="slide content-center">
       
+      <div class="wave-background"></div>
       <div class="eyebrow">Proof of Concept Analysis</div>
-      <h1 class="slide-title large">Identity Verification<br/>Gap Analysis & Recommendations</h1>
-      <p class="subtitle">Data-Driven Insights for Enhanced Fraud Prevention</p>
+      <h1 class="slide-title large" style="margin-bottom: 40px;">Identity Verification<br/>Gap Analysis & Recommendations</h1>
+      <p class="subtitle" style="margin-top: 24px;">Data-Driven Insights for Enhanced Fraud Prevention</p>
       <p class="body-text" style="margin-top: 40px;">Prepared by Socure | February 2026</p>
      
       <div class="slide-footer">
@@ -1579,24 +1693,18 @@
    
     <!-- Slide 18: Thank You -->
     <div class="slide content-center">
-      <svg style="height: 60px; margin-bottom: 40px;" viewBox="0 0 168.12 75.54" xmlns="http://www.w3.org/2000/svg">
-        <polygon fill="#ff6900" points="30.91 10.32 12.57 28.62 30.91 46.92 49.25 28.62 30.91 10.32"/>
-        <polygon fill="#ff8200" points="12.57 46.92 30.91 65.22 49.25 46.92 30.91 28.62 12.57 46.92"/>
-        <path fill="#1c1c4c" d="M58.17,44.11l2.44-2.92c1.69,1.39,3.46,2.27,5.6,2.27,1.69,0,2.71-.67,2.71-1.77v-.05c0-1.04-.64-1.58-3.78-2.38-3.78-.96-6.22-2.01-6.22-5.72v-.05c0-3.4,2.73-5.65,6.57-5.65,2.74,0,5.07,.86,6.97,2.38l-2.15,3.1c-1.66-1.15-3.3-1.85-4.88-1.85s-2.41,.72-2.41,1.63v.05c0,1.23,.8,1.63,4.05,2.46,3.81,.99,5.95,2.36,5.95,5.62v.05c0,3.72-2.84,5.81-6.89,5.81-2.84,0-5.71-.99-7.96-3"/>
-        <path fill="#1c1c4c" d="M86.41,39.75v-.05c0-2.11-1.53-3.96-3.78-3.96s-3.73,1.79-3.73,3.91v.05c0,2.11,1.53,3.96,3.78,3.96s3.73-1.79,3.73-3.91m-11.53,0v-.05c0-4.12,3.33-7.46,7.8-7.46s7.75,3.29,7.75,7.41v.05c0,4.12-3.33,7.46-7.8,7.46s-7.75-3.29-7.75-7.41"/>
-        <path fill="#1c1c4c" d="M92.17,39.75v-.05c0-4.09,3.14-7.46,7.54-7.46,2.71,0,4.4,.91,5.74,2.41l-2.49,2.68c-.91-.96-1.82-1.58-3.27-1.58-2.04,0-3.49,1.79-3.49,3.91v.05c0,2.19,1.42,3.96,3.65,3.96,1.37,0,2.31-.59,3.3-1.53l2.39,2.41c-1.39,1.52-3,2.62-5.87,2.62-4.32,0-7.48-3.32-7.48-7.41"/>
-        <path fill="#1c1c4c" d="M107.56,41.79v-9.28h4.08v8c0,1.93,.91,2.92,2.47,2.92s2.55-.99,2.55-2.92v-8h4.08v14.34h-4.08v-2.03c-.94,1.2-2.15,2.3-4.21,2.3-3.08,0-4.88-2.03-4.88-5.32"/>
-        <path fill="#1c1c4c" d="M123.87,32.5h4.08v2.89c.83-1.98,2.17-3.26,4.58-3.16v4.25h-.21c-2.71,0-4.37,1.63-4.37,5.06v5.3h-4.08v-14.34h0Z"/>
-        <path fill="#1c1c4c" d="M143.6,38.55c-.24-1.82-1.31-3.05-3.03-3.05s-2.79,1.2-3.11,3.05h6.14Zm-10.14,1.2v-.05c0-4.09,2.92-7.46,7.11-7.46,4.8,0,7,3.72,7,7.79,0,.32-.03,.7-.05,1.07h-10c.4,1.85,1.69,2.81,3.51,2.81,1.37,0,2.36-.43,3.49-1.47l2.33,2.06c-1.34,1.66-3.27,2.68-5.87,2.68-4.32,0-7.51-3.02-7.51-7.41"/>
-      </svg>
-     
-      <h1 class="slide-title large" style="margin-bottom: 24px;">Thank You</h1>
-      <p class="subtitle">Questions?</p>
-     
-      <div style="margin-top: 60px; text-align: center;">
-        <p class="body-text"><strong>Contact Information</strong></p>
-        <p class="body-text">Email: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="681b09040d1b281b070b1d1a0d460b0705">[email&#160;protected]</a></p>
-        <p class="body-text">Web: www.socure.com</p>
+      <div class="wave-background"></div>
+      
+      <h1 class="slide-title large" style="margin-bottom: 48px;">Thank You</h1>
+      <p class="subtitle" style="font-size: 28px; color: var(--color-gray-dark);">Questions? Let's connect.</p>
+      
+      <div style="margin-top: 80px;">
+        <p class="body-text" style="font-size: 20px; margin-bottom: 12px;">
+          <strong>Email:</strong> <a href="/cdn-cgi/l/email-protection#1b72757d745b6874786e697e35787476" style="color: var(--color-primary); text-decoration: none;"><span class="__cf_email__" data-cfemail="7910171f16390a161a0c0b1c571a1614">[email&#160;protected]</span></a>
+        </p>
+        <p class="body-text" style="font-size: 20px;">
+          <strong>Web:</strong> <a href="https://www.socure.com" style="color: var(--color-primary); text-decoration: none;">www.socure.com</a>
+        </p>
       </div>
      
       <div class="slide-footer">
@@ -1604,6 +1712,8 @@
         <span class="slide-number">18</span>
       </div>
     </div>
+   
+  </div></div>
    
   </div>
  
@@ -1614,16 +1724,23 @@
   <script>
     // Initialize everything when page loads
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('DOM loaded');
+      console.log('=== DOM LOADED ===');
+      console.log('Starting initialization...');
       
       // Delay to ensure Chart.js is loaded
       setTimeout(function() {
-        console.log('Initializing...');
-        initializeEverything();
+        console.log('=== TIMEOUT REACHED ===');
+        try {
+          initializeEverything();
+        } catch (error) {
+          console.error('Initialization error:', error);
+        }
       }, 200);
     });
     
     function initializeEverything() {
+      console.log('=== INITIALIZE EVERYTHING CALLED ===');
+      
       // Check Chart.js
       if (typeof Chart === 'undefined') {
         console.error('Chart.js not loaded!');
@@ -1641,6 +1758,8 @@
       const nav = document.getElementById('slideNav');
       
       console.log('Found ' + slides.length + ' slides');
+      console.log('Found ' + leftNavItems.length + ' left nav items');
+      console.log('slideNav element:', nav);
       
       // Create nav dots (only if slideNav element exists)
       if (nav) {
@@ -1656,17 +1775,24 @@
       }
       
       // Left nav click handlers
-      leftNavItems.forEach(item => {
+      console.log('Setting up left nav click handlers...');
+      leftNavItems.forEach((item, index) => {
+        console.log('Adding click handler to nav item', index, item.textContent.trim());
         item.addEventListener('click', (e) => {
           e.preventDefault();
+          console.log('Nav item clicked:', item.textContent.trim());
           leftNavItems.forEach(i => i.classList.remove('active'));
           item.classList.add('active');
           const slideNum = parseInt(item.getAttribute('data-slide'));
+          console.log('Scrolling to slide:', slideNum);
           if (slideNum && slides[slideNum - 1]) {
             slides[slideNum - 1].scrollIntoView({ behavior: 'smooth' });
+          } else {
+            console.error('Slide not found:', slideNum);
           }
         });
       });
+      console.log('Left nav handlers set up ✓');
       
       // Scroll observer
       const observer = new IntersectionObserver((entries) => {
